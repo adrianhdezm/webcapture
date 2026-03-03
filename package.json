@@ -11,7 +11,8 @@
     "test": "LOG_LEVEL=silent vitest run",
     "test:watch": "vitest",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "ci": "pnpm run check && pnpm run test && pnpm run format"
   },
   "dependencies": {
     "@godaddy/terminus": "^4.12.1",

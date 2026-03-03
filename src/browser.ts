@@ -1,10 +1,9 @@
-import { Browser, chromium } from "playwright";
+import { Browser, chromium } from 'playwright';
 
 const browserContextOptions = {
   viewport: { width: 1024, height: 1280 },
-  userAgent:
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-  locale: "en-US",
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+  locale: 'en-US'
 };
 
 export class BrowserService {
@@ -21,7 +20,7 @@ export class BrowserService {
     const page = await context.newPage();
 
     try {
-      await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30_000 });
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
       await page.mouse.wheel(0, 2000);
       await page.waitForTimeout(2000);
 
@@ -37,11 +36,11 @@ export class BrowserService {
     const page = await context.newPage();
 
     try {
-      await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30_000 });
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
       await page.mouse.wheel(0, 2000);
       await page.waitForTimeout(2000);
 
-      const screenshot = await page.screenshot({ type: "png", fullPage: true });
+      const screenshot = await page.screenshot({ type: 'png', fullPage: true });
       return screenshot;
     } finally {
       await context.close();

@@ -1,4 +1,4 @@
-import type { BrowserService } from "./browser.js";
+import type { BrowserService } from './browser.js';
 
 declare global {
   namespace Express {

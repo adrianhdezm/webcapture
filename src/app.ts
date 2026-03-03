@@ -5,6 +5,7 @@ import { pinoHttp } from "pino-http";
 import { z, ZodError } from "zod";
 import { BrowserService } from "./browser.js";
 import { logger } from "./logger.js";
+import { parseBasicAuthHeader, safeEqual } from "./utils.js";
 
 class HttpError extends Error {
   public readonly statusCode: number;
@@ -19,6 +20,14 @@ class HttpError extends Error {
 const urlRequestSchema = z.object({ url: z.httpUrl().normalize() });
 
 export function createApp(browserService: BrowserService): express.Express {
+  const authUser = process.env.BASIC_AUTH_USER;
+  const authPassword = process.env.BASIC_AUTH_PASSWORD;
+  if (!authUser || !authPassword) {
+    throw new Error(
+      "BASIC_AUTH_USER and BASIC_AUTH_PASSWORD must be set in environment.",
+    );
+  }
+
   const app = express();
   app.locals.browser = browserService;
   app.disable("x-powered-by");
@@ -31,6 +40,23 @@ export function createApp(browserService: BrowserService): express.Express {
       logger,
     }),
   );
+
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const credentials = parseBasicAuthHeader(req.headers.authorization);
+    if (!credentials) {
+      next(new HttpError(401, "Unauthorized"));
+      return;
+    }
+
+    const userMatches = safeEqual(credentials.username, authUser);
+    const passwordMatches = safeEqual(credentials.password, authPassword);
+    if (!userMatches || !passwordMatches) {
+      next(new HttpError(401, "Unauthorized"));
+      return;
+    }
+
+    next();
+  });
 
   app.post(
     "/content",

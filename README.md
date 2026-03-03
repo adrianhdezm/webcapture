@@ -7,6 +7,8 @@ Minimal Express + TypeScript API (using `pnpm`) for browser rendering.
 - `POST /content` - Returns HTML as `value`
 - `POST /screenshot` - Returns PNG image binary (`image/png`)
 
+All endpoints require HTTP Basic Auth.
+
 Both endpoints receive JSON body:
 
 ```json
@@ -48,7 +50,7 @@ This uses Node's native env loading via `node --env-file=.env`.
 Fetch HTML:
 
 ```bash
-curl -X POST http://localhost:3000/content \
+curl -u admin:change-me -X POST http://localhost:3000/content \
   -H "content-type: application/json" \
   -d '{"url":"https://example.com"}'
 ```
@@ -56,7 +58,7 @@ curl -X POST http://localhost:3000/content \
 Capture screenshot:
 
 ```bash
-curl -X POST http://localhost:3000/screenshot \
+curl -u admin:change-me -X POST http://localhost:3000/screenshot \
   -H "content-type: application/json" \
   -d '{"url":"https://example.com"}' \
   --output screenshot.png

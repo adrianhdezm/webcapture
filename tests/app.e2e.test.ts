@@ -6,8 +6,12 @@ import { BrowserService } from "../src/browser.js";
 
 describe("app e2e", { timeout: 60_000 }, () => {
   let browserService: BrowserService | undefined;
+  const authUser = "test-user";
+  const authPassword = "test-pass";
 
   beforeAll(async () => {
+    process.env.BASIC_AUTH_USER = authUser;
+    process.env.BASIC_AUTH_PASSWORD = authPassword;
     browserService = new BrowserService();
     await browserService.initialize();
   }, 60_000);
@@ -23,6 +27,7 @@ describe("app e2e", { timeout: 60_000 }, () => {
 
     const response = await request(app)
       .post("/content")
+      .auth(authUser, authPassword)
       .send({ url: "https://example.com" });
 
     expect(response.status).toBe(200);
@@ -35,6 +40,7 @@ describe("app e2e", { timeout: 60_000 }, () => {
 
     const response = await request(app)
       .post("/screenshot")
+      .auth(authUser, authPassword)
       .send({ url: "https://example.com" })
       .buffer(true)
       .parse((res, callback: (error: Error | null, body: Buffer) => void) => {
@@ -58,7 +64,10 @@ describe("app e2e", { timeout: 60_000 }, () => {
 
   it("returns 400 for invalid url payload", async () => {
     const app = createApp(browserService as BrowserService);
-    const response = await request(app).post("/content").send({ url: "nope" });
+    const response = await request(app)
+      .post("/content")
+      .auth(authUser, authPassword)
+      .send({ url: "nope" });
 
     expect(response.status).toBe(400);
     expect(response.body).toEqual({ error: expect.any(String) });
@@ -66,11 +75,23 @@ describe("app e2e", { timeout: 60_000 }, () => {
 
   it("returns 404 for unknown route", async () => {
     const app = createApp(browserService as BrowserService);
-    const response = await request(app).get("/not-found");
+    const response = await request(app)
+      .get("/not-found")
+      .auth(authUser, authPassword);
 
     expect(response.status).toBe(404);
     expect(response.body).toEqual({
       error: "Route not found: GET /not-found",
     });
+  });
+
+  it("returns 401 when auth is missing", async () => {
+    const app = createApp(browserService as BrowserService);
+    const response = await request(app)
+      .post("/content")
+      .send({ url: "https://example.com" });
+
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ error: "Unauthorized" });
   });
 });

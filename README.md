@@ -1,4 +1,4 @@
-# Browser Rendering API
+# Webcapture
 
 Minimal Express + TypeScript API (using `pnpm`) for browser rendering.
 

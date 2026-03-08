@@ -83,6 +83,19 @@ export function createApp(browserService: BrowserService): express.Express {
     }
   });
 
+  app.post('/snapshot', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const requestOptions = requestOptionsSchema.parse(req.body);
+      const browser = req.app.locals.browser;
+
+      const snapshot = await browser.getSnapshot(requestOptions);
+
+      res.json(snapshot);
+    } catch (error) {
+      next(error);
+    }
+  });
+
   app.use((req: Request, _res: Response, next: NextFunction) => {
     next(new HttpError(404, `Route not found: ${req.method} ${req.originalUrl}`));
   });

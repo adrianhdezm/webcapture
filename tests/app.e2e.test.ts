@@ -53,6 +53,21 @@ describe('app e2e', { timeout: 60_000 }, () => {
     expect((response.body as Buffer).subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))).toBe(true);
   });
 
+  it('returns html and base64 screenshot from /snapshot', async () => {
+    const app = createApp(browserService as BrowserService);
+
+    const response = await request(app).post('/snapshot').auth(authUser, authPassword).send({ url: 'https://example.com' });
+
+    expect(response.status).toBe(200);
+    expect(response.body.url).toContain('https://example.com');
+    expect(response.body.html).toContain('Example Domain');
+    expect(typeof response.body.screenshotBase64).toBe('string');
+    expect(response.body.screenshotBase64.length).toBeGreaterThan(0);
+
+    const screenshotBuffer = Buffer.from(response.body.screenshotBase64, 'base64');
+    expect(screenshotBuffer.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))).toBe(true);
+  });
+
   it('returns 400 for invalid url payload', async () => {
     const app = createApp(browserService as BrowserService);
     const response = await request(app).post('/content').auth(authUser, authPassword).send({ url: 'nope' });

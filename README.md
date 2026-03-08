@@ -6,6 +6,7 @@ Minimal Express + TypeScript API (using `pnpm`) for browser rendering.
 
 - `POST /content` - Returns HTML as `value`
 - `POST /screenshot` - Returns PNG image binary (`image/png`)
+- `POST /snapshot` - Returns JSON with `url`, `html`, and `screenshotBase64`
 
 All endpoints require HTTP Basic Auth.
 
@@ -82,6 +83,14 @@ curl -u admin:change-me -X POST http://localhost:3000/screenshot \
   -H "content-type: application/json" \
   -d '{"url":"https://example.com"}' \
   --output screenshot.png
+```
+
+Capture snapshot (HTML + base64 screenshot):
+
+```bash
+curl -u admin:change-me -X POST http://localhost:3000/snapshot \
+  -H "content-type: application/json" \
+  -d '{"url":"https://example.com"}'
 ```
 
 Production run:

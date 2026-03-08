@@ -32,7 +32,7 @@ export function createApp(browserService: BrowserService): express.Express {
 
   app.use(cors());
   app.use(compression());
-  app.use(express.json({ limit: '2mb' }));
+  app.use(express.json({ limit: '1mb' }));
   app.use(
     pinoHttp({
       logger
